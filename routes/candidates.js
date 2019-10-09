@@ -3,6 +3,7 @@ var router = express.Router();
 const db = require('../db');
 const bcrypt = require('bcryptjs');
 const randToken = require('rand-token')
+const getPredictions = require('./getPredictions')
 
 //ADD USER TO DATABASE
 router.post('/create-user-profile',(req,res,next)=>{
@@ -47,12 +48,14 @@ router.post('/create-user-profile',(req,res,next)=>{
     })
 })
 
-router.get('/position-candidates',(req,res,next)=>{
-  const positionsQuery = `
+router.get('/candidates',(req,res,next)=>{
+  console.log('candidates')
+  const getCandidatesQuery = `
     SELECT *
     FROM candidates 
+    LIMIT 10
   `
-  db.query(positionsQuery,(err,results)=>{
+  db.query(getCandidatesQuery,(err,results)=>{
     console.log('positions query')
     if(err) throw err;
     res.json(results)
@@ -64,9 +67,22 @@ router.get('/candidateProfile/:id',(req,res,next)=>{
   const id = req.params.id 
   console.log(id)
   const positionsQuery = `
-    SELECT *
-    FROM candidates 
-    WHERE id = ?
+    SELECT 
+      GROUP_CONCAT(candidate.user_skill) as skills,
+      candidate.id,
+      candidate.name,
+      candidate.location,
+      candidate.description,
+      candidate.title
+    FROM (
+    SELECT candidates.*, skills.skill as user_skill
+    FROM candidates
+    JOIN users_skills 
+      ON users_skills.user_id = candidates.id
+    JOIN skills 
+      ON skills.id = users_skills.skill_id 
+    WHERE 
+        candidates.id = ?) as candidate
   `
   db.query(positionsQuery,[id],(err,results)=>{
     console.log('positions query')
@@ -74,5 +90,24 @@ router.get('/candidateProfile/:id',(req,res,next)=>{
     res.json(results)
   })
 })
+
+//THIS ROUTE NEEDS TO UPDATE THE ACCEPTED 'FIELD' FOR THE CANDIDATE
+router.post('/accept-decline-candidate',(req,res,next)=>{
+  const acceptValue = req.params.data.acceptDeclineValue
+  const userId = req.params.data.userId
+  const updateQuery = `
+  UPDATE candidates_positions_accepted
+  SET accepted = ?
+  WHERE user_id = ?
+  `
+  db.query(updateQuery,[acceptValue,userId],(err,results)=>{
+    if(err) throw err
+    res.json({
+      msg: "CandiateUpdated"
+    })
+  })
+})
+
+
 
 module.exports = router;
