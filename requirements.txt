@@ -3,7 +3,7 @@ numpy==1.16.2
 mysql-connector==2.2.9
 scikit-image==0.14.2
 scikit-learn==0.20.3
-
+category-encoders==2.1.0
 
 
 # absl-py==0.7.1
@@ -49,7 +49,7 @@ scikit-learn==0.20.3
 # bokeh==1.0.4
 # boto==2.49.0
 # Bottleneck==1.2.1
-# category-encoders==2.1.0
+
 # certifi==2019.3.9
 # cffi==1.12.2
 # chardet==3.0.4
