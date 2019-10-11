@@ -4,6 +4,7 @@ module.exports = (positionId) => {
       stdio: 'pipe',
       encoding: 'utf-8' 
     })
+    console.log("predictions",  predictons)
     return predictons.output[1]
 }
 
