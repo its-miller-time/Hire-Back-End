@@ -1,6 +1,6 @@
 module.exports = (positionId) => {
     const { spawnSync } = require('child_process')
-    let predictons = spawnSync('/python', ['sorting_script.py',positionId], {
+    let predictons = spawnSync('python', ['sorting_script.py',positionId], {
       stdio: 'pipe',
       encoding: 'utf-8' 
     })
