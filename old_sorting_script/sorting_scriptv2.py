@@ -1,22 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[698]:
 
 
 import pandas as pd
 import numpy as np
 import sys as sys
+
+# In[699]:
+
+
 import mysql.connector as sql
-from sklearn.model_selection import train_test_split
-import category_encoders as ce
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score
-
-
-# In[2]:
-
-
 
 db_connection = sql.connect(
     host = '127.0.0.1',
@@ -30,15 +25,8 @@ cursor = db_connection.cursor()
 
 # ### CANDIDATE DATAFRAME
 
-# In[3]:
-
-
+# In[700]:
 positionId = sys.argv[1]
-positionId = 2
-# print(positionId)
-
-
-# In[4]:
 
 
 cursor.execute('''
@@ -61,46 +49,54 @@ cursor.execute('''
 ''',(positionId,))
 
 
-# In[ ]:
+
+# cursor.execute('''
+# SELECT 
+#     candidates.id,
+#     candidates_positions_accepted.position_id,
+#     candidates.nameFirst,
+#     candidates_positions_accepted.accepted,
+#     candidates.description,
+#     candidates.most_recent_job_role,
+#     candidates.desired_location_city,
+#     candidates.desired_salary_range,
+#     candidates.years_of_experience
+# FROM candidates,positions, candidates_positions_accepted
+# WHERE 
+#     candidates.id = candidates_positions_accepted.user_id AND
+#     candidates_positions_accepted.position_id = positions.id 
+# ''')
 
 
-
-
-
-# In[5]:
+# In[701]:
 
 
 table = cursor.fetchall()
 
 
-# In[6]:
+# In[702]:
 
 
-# print(type(list(table)))
 
 
-# In[7]:
+# In[703]:
 
 
 candiadte_df = pd.DataFrame(list(table))
-
-
-# In[8]:
-
+# In[704]:
 
 candiadte_df.columns = ["id","position_id","name","accepted","description","title","location","salary_range","years_of_experience"]
 
 
-# In[9]:
+# In[705]:
 
 
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    display(candiadte_df)
+# candiadte_df.head()
 
 
 # ### SKILLS DATAFRAME
 
-# In[10]:
+# In[706]:
 
 
 cursor.execute('''
@@ -112,50 +108,30 @@ WHERE
 ''')
 
 
-# In[11]:
+# In[707]:
 
 
 skill_table = cursor.fetchall()
 
 
-# In[12]:
+# In[708]:
 
 
 skills_df = pd.DataFrame(list(skill_table),columns = ["id","name","skill"])
 
 
-# In[13]:
-
-
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    display(skills_df)
-
-
-# In[14]:
-
+# In[710]:
 
 table = pd.pivot_table(skills_df, index=['name'],
 columns=['skill'], aggfunc='count', fill_value = 0)
 
-
-# In[15]:
-
+# In[711]:
 
 name_skill_df = table['id']
 
-
-# In[16]:
-
-
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    display(name_skill_df)
-
-
+# In[845]:
 # ### DF MERGE
-
-# In[17]:
-
-
+# In[713]:
 full_df = pd.merge(
     candiadte_df,
     name_skill_df,
@@ -163,22 +139,14 @@ full_df = pd.merge(
     right_on ="name"
 )
 
-
-# In[18]:
-
-
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    display(full_df[full_df.accepted == 1.0])
+# In[714]:
 
 
 # ### TRAINING DATA
 
-# In[19]:
-
+# In[729]:
 
 training_data = full_df[full_df.accepted >= 0]
-# full_df[full_df.accepted == 0.0 | full_df.accepted == 1.0
-training_data.shape
 
 
 # In[ ]:
@@ -189,25 +157,27 @@ training_data.shape
 
 # ### MLP USING DF
 
-# In[ ]:
+# In[846]:
 
 
-
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+import category_encoders as ce
 
 
 # #### Using One Hot Encoding (OHE) to transform the categorical values into numeric values that the MLP can train on
 
-# In[20]:
+# In[847]:
 
 
 ohe = ce.OneHotEncoder(handle_unknown='value', use_cat_names=True, cols=["title","location","salary_range","years_of_experience"])
 
 
-# In[21]:
+# In[848]:
 
 
 #Pull all data with an 'accepted' value of 1.0 (aka 'True')
-unseen_data = full_df[(full_df.accepted != 1) & (full_df.accepted != 0)]
+unseen_data = full_df[full_df.accepted < 2]
 
 #Dropping columns that we dont want to train on 
 unseen_data_dirty = unseen_data.drop(["accepted","name","description"], axis=1)
@@ -225,27 +195,26 @@ unseen_encoded_dummies = pd.get_dummies(unseen_data_clean, dummy_na= True)
 
 
 
-# In[22]:
+# In[849]:
 
 
 #Adding the columns from unseen_encoded_dummies to training_data so MLP shape will match
 training_encoded_for_model = training_data.reindex(columns = unseen_encoded_dummies.columns, 
     fill_value=0)
-training_encoded_for_model.shape
+training_encoded_for_model.head()
 
 
-# In[37]:
+# In[850]:
 
 
-X_dirty = training_data.drop(["accepted","name","description"], axis=1)
+# X_dirty = training_data.drop(["accepted","name","description"], axis=1)
 
 
-# In[39]:
+# In[851]:
 
 
-X = ohe.fit_transform(X_dirty)
-# X = training_encoded_for_model
-# X.head()
+# X = ohe.fit_transform(X_dirty)
+X = training_encoded_for_model
 
 
 # In[ ]:
@@ -254,132 +223,112 @@ X = ohe.fit_transform(X_dirty)
 
 
 
-# In[40]:
+# In[852]:
 
 
 y = training_data["accepted"]
 
 
-# In[41]:
+# In[853]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
 
 
-# In[42]:
+# In[742]:
 
 
-# X_train.head()
+from sklearn.neural_network import MLPClassifier
 
 
-# In[43]:
+# In[743]:
 
 
 model = MLPClassifier()
 
 
-# In[44]:
+# In[744]:
 
 
 trained_model = model.fit(X_train, y_train)
 
 
-# In[ ]:
+# In[753]:
 
 
+from sklearn.metrics import accuracy_score
 
 
-
-# In[45]:
+# In[754]:
 
 
 accuracy_score(y_train, model.predict(X_train))
 
 
-# In[46]:
+# In[856]:
 
 
 # X = ohe.fit_transform(X_dirty)
 
 
-# In[47]:
+# In[857]:
 
 
-unseen_data = full_df[full_df.accepted < 2]
-unseen_data.shape
+unseen_data = full_df[full_df.accepted < 2 ]
 
 
-# In[48]:
+# In[858]:
 
 
 # Test encoded column need to be added to my training data colums as dummy inputs
 
 
-# In[49]:
+# In[859]:
 
 
 unseen_data_dirty = unseen_data.drop(["accepted","name","description"], axis=1)
 
 
-# In[50]:
+# In[860]:
 
 
 unseen_data_clean = ohe.fit_transform(unseen_data_dirty)
-unseen_data_clean.shape
+# unseen_data_clean.head()
 
 
-# In[51]:
+# In[861]:
 
 
 results = trained_model.predict(unseen_data_clean)
-results.shape
 
 
-# In[52]:
+# In[869]:
 
 
 results_df = pd.DataFrame(results,columns=["accepted"])
-results_df.shape
+
+# In[865]:
 
 
-# In[53]:
+predicted_candidates = pd.merge(
+    results_df,
+    full_df
+)
 
-
-# predicted_candidates = pd.merge(
-#     results_df,
-#     full_df
-# )
 full_df['predictions'] = results_df
 
-
-# In[54]:
-
-
-# full_df.head(40)
+# In[870]:
 
 
-# In[55]:
 
 
-print(full_df.to_csv())
-
-
-# In[ ]:
-
-
-# predicted_candidates.head(50)
-
-
-# In[ ]:
+# In[871]:
 
 
 # print(predicted_candidates.to_csv())
-
-
-# In[ ]:
-
-
-# predicted_candidates.to_json()
+# print(predicted_candidates.to_csv())
+# print(full_df.head())
+print(full_df.to_json(orient='records'))
 
 
 # In[ ]:

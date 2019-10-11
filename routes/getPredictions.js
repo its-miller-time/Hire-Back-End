@@ -5,7 +5,8 @@ module.exports = (positionId) => {
       encoding: 'utf-8' 
     })
     console.log("predictions",  predictions)
-    return predictions
+    
+    return predictions.output[1]
 }
 
 //  getPredictions
