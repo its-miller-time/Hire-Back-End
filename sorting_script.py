@@ -7,7 +7,6 @@
 import pandas as pd
 import numpy as np
 import sys as sys
-from matplotlib import pyplot as plt
 
 # In[699]:
 
@@ -161,11 +160,9 @@ training_data = full_df[full_df.accepted >= 0]
 # In[846]:
 
 
-import matplotlib.pyplot as plt 
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import category_encoders as ce
-import seaborn as sns
 
 
 # #### Using One Hot Encoding (OHE) to transform the categorical values into numeric values that the MLP can train on
