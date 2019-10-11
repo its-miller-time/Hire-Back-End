@@ -49,7 +49,7 @@ router.post('/create-user-profile',(req,res,next)=>{
 })
 
 router.get('/candidates',(req,res,next)=>{
-  console.log('candidates')
+  console.log('candidates route')
   const getCandidatesQuery = `
     SELECT *
     FROM candidates 
@@ -62,10 +62,8 @@ router.get('/candidates',(req,res,next)=>{
   })
 })
 
-router.get('/candidateProfile/:id',(req,res,next)=>{
-  console.log(req.params)
+router.get('/candidateProfile/:position_id/:id',(req,res,next)=>{
   const id = req.params.id 
-  console.log(id)
   const positionsQuery = `
     SELECT 
       GROUP_CONCAT(candidate.user_skill) as skills,
@@ -75,14 +73,14 @@ router.get('/candidateProfile/:id',(req,res,next)=>{
       candidate.description,
       candidate.title
     FROM (
-    SELECT candidates.*, skills.skill as user_skill
-    FROM candidates
-    JOIN users_skills 
-      ON users_skills.user_id = candidates.id
-    JOIN skills 
-      ON skills.id = users_skills.skill_id 
-    WHERE 
-        candidates.id = ?) as candidate
+      SELECT candidates.*, skills.skill as user_skill
+      FROM candidates
+      JOIN users_skills 
+        ON users_skills.user_id = candidates.id
+      JOIN skills 
+        ON skills.id = users_skills.skill_id
+      WHERE 
+        candidates.id = ?) as candidate  
   `
   db.query(positionsQuery,[id],(err,results)=>{
     console.log('positions query')
@@ -92,19 +90,51 @@ router.get('/candidateProfile/:id',(req,res,next)=>{
 })
 
 //THIS ROUTE NEEDS TO UPDATE THE ACCEPTED 'FIELD' FOR THE CANDIDATE
-router.post('/accept-decline-candidate',(req,res,next)=>{
-  const acceptValue = req.params.data.acceptDeclineValue
-  const userId = req.params.data.userId
-  const updateQuery = `
-  UPDATE candidates_positions_accepted
-  SET accepted = ?
-  WHERE user_id = ?
+router.post('/accept-decline-candidate/:position_id/:userId/:value',(req,res,next)=>{
+  const value = req.params.value
+  const userId = req.params.userId
+  const position_id = req.params.position_id
+  console.log('accep-decline-route')
+  //CHECK TO SEE IF USER_POSITION PAIR ALREADY EXISTS
+  const checkPairQuery = `
+  SELECT id
+  FROM candidates_positions_accepted
+  WHERE 
+    user_id = ? AND
+    position_id = ?
   `
-  db.query(updateQuery,[acceptValue,userId],(err,results)=>{
+  db.query(checkPairQuery,[userId,position_id],(err,results)=>{
     if(err) throw err
-    res.json({
-      msg: "CandiateUpdated"
-    })
+    if(results.length > 0){
+      //IF THE PAIR EXISTS, UPDATE RECORD 
+      const updateQuery = `
+      UPDATE candidates_positions_accepted
+      SET accepted = ?
+      WHERE 
+        user_id = ? AND
+        position_id = ?
+      `
+      db.query(updateQuery,[value,userId,position_id],(err)=>{
+        if(err) throw err
+        res.json({
+          msg: "RecordUpdated"
+        })
+      })
+    } else {
+      //ELSE PAIR DOES NOT EXIST, CREATE RECORD
+      const insertPairQuery = `
+      INSERT INTO candidates_positions_accepted
+        (user_id,position_id,accepted)
+      VALUES
+        (?,?,?)
+      `
+      db.query(insertPairQuery,[userId,position_id,value],(err)=>{
+        if(err) throw err
+        res.json({
+          msg: "RecordCreated"
+        })
+      })
+    }
   })
 })
 

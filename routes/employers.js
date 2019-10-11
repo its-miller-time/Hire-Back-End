@@ -7,23 +7,25 @@ const getPredictions = require('./getPredictions')
 router.post('/create-position',(req,res,next)=>{
   const {company_name,title,years_of_experience} = req.body
   
+  //NEED TO GET THE PRIMARY KEY BACK FROM THE QUERY 
+  
   const insertPositionQuery = `
     INSERT INTO positions
       (company_name,title,years_of_experience)
     VALUES
-      (?,?,?)
+      (?,?,?);
   `
-  console.log(db)
-  db.query(insertPositionQuery,[company_name,title,years_of_experience],(err)=>{
+  db.query(insertPositionQuery,[company_name,title,years_of_experience],(err,results)=>{
+    console.log(results.insertId)
+    const position_id = results.insertId
     if(err){throw err}
     res.json({
-      msg: "Position Added"
+      position_id: position_id //NEED TO  PUT ID IN THE RESPONSE 
     })
   })
 })
 
 router.get('/positions',(req,res,next)=>{
-  console.log('position req:',req)
   const positionsQuery = `
     SELECT *
     FROM positions 
@@ -39,7 +41,6 @@ router.get('/positions',(req,res,next)=>{
 // FIELDS IN THE LINKING TABLE
 router.get('/positions/:id',(req,res,next)=>{
   const positionId = req.params.id;
-  console.log(positionId)
   console.log('will run getPredictions function')
   const data = getPredictions(positionId) //GET PREDICTIONS HANDLES ITS OWN QUERY, NEED TO HAND IT THE ID
     res.json({

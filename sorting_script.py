@@ -120,38 +120,19 @@ skill_table = cursor.fetchall()
 
 skills_df = pd.DataFrame(list(skill_table),columns = ["id","name","skill"])
 
-# In[709]:
-
-
-# with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-#     display(skills_df)
-
 
 # In[710]:
-
 
 table = pd.pivot_table(skills_df, index=['name'],
 columns=['skill'], aggfunc='count', fill_value = 0)
 
-
 # In[711]:
 
-
 name_skill_df = table['id']
-# print(name_skill_df)
 
 # In[845]:
-
-
-# with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-#     display(name_skill_df)
-
-
 # ### DF MERGE
-
 # In[713]:
-
-
 full_df = pd.merge(
     candiadte_df,
     name_skill_df,
@@ -162,17 +143,11 @@ full_df = pd.merge(
 # In[714]:
 
 
-# with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-#     display(full_df[full_df.accepted == 1.0])
-
-
 # ### TRAINING DATA
 
 # In[729]:
 
-
 training_data = full_df[full_df.accepted >= 0]
-# full_df[full_df.accepted == 0.0 | full_df.accepted == 1.0
 
 
 # In[ ]:
