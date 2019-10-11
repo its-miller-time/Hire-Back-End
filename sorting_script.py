@@ -94,8 +94,8 @@ candiadte_df.columns = ["id","position_id","name","accepted","description","titl
 # In[9]:
 
 
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    display(candiadte_df)
+# with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+#     display(candiadte_df)
 
 
 # ### SKILLS DATAFRAME
@@ -127,8 +127,8 @@ skills_df = pd.DataFrame(list(skill_table),columns = ["id","name","skill"])
 # In[13]:
 
 
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    display(skills_df)
+# with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+#     display(skills_df)
 
 
 # In[14]:
@@ -147,8 +147,8 @@ name_skill_df = table['id']
 # In[16]:
 
 
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    display(name_skill_df)
+# with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+#     display(name_skill_df)
 
 
 # ### DF MERGE
@@ -167,8 +167,8 @@ full_df = pd.merge(
 # In[18]:
 
 
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    display(full_df[full_df.accepted == 1.0])
+# with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+#     display(full_df[full_df.accepted == 1.0])
 
 
 # ### TRAINING DATA
