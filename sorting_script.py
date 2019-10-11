@@ -361,7 +361,7 @@ full_df['predictions'] = results_df
 # In[55]:
 
 
-print(full_df.to_csv())
+print(full_df.to_json())
 
 
 # In[ ]:
