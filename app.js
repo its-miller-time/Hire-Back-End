@@ -33,6 +33,13 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/employers', employersRouter);
 app.use('/candidates', candidatesRouter);
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public/index.html'), function(err) {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+})
 
 
 module.exports = app;
