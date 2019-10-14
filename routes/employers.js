@@ -16,7 +16,6 @@ router.post('/create-position',(req,res,next)=>{
       (?,?,?);
   `
   db.query(insertPositionQuery,[company_name,title,years_of_experience],(err,results)=>{
-    console.log(results.insertId)
     const position_id = results.insertId
     if(err){throw err}
     res.json({
@@ -31,7 +30,6 @@ router.get('/positions',(req,res,next)=>{
     FROM positions 
   `
   db.query(positionsQuery,(err,results)=>{
-    console.log('positions query')
     if(err) throw err;
     res.json(results)
   })
@@ -40,8 +38,9 @@ router.get('/positions',(req,res,next)=>{
 //THIS ROUTE NEEDS TO PULL THE CANDIADATES THAT MATCH THE POSITION/USER ID
 // FIELDS IN THE LINKING TABLE
 router.get('/positions/:id',(req,res,next)=>{
+  console.log('gtPredictionsAboutToFire')
+  console.log('request',req)
   const positionId = req.params.id;
-  console.log('will run getPredictions function')
   const data = getPredictions(positionId) //GET PREDICTIONS HANDLES ITS OWN QUERY, NEED TO HAND IT THE ID
     res.json({
       msg: data
@@ -53,14 +52,12 @@ router.get('/positions/:id',(req,res,next)=>{
 //THIS ROUTE NEED TO GENERATE A LIST OF CANDIDATES WITH POSITION TITLE
 // THAT MATCH THE JOB POSTING POSITION
 // router.get('/positions/:id',(req,res,next)=>{
-//   console.log('position req:',req.body)
 //   const positionsQuery = `
 //     SELECT *
 //     FROM candidates 
 //     WHERE title = 
 //   `
 //   db.query(positionsQuery,(err,results)=>{
-//     console.log('positions query')
 //     if(err) throw err;
 //     res.json(results)
 //   })
