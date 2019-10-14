@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/static/css/main.f6566db2.chunk.css",
+    "main.js": "/static/js/main.8ae3f675.chunk.js",
+    "main.js.map": "/static/js/main.8ae3f675.chunk.js.map",
+    "runtime~main.js": "/static/js/runtime~main.8b832b20.js",
+    "runtime~main.js.map": "/static/js/runtime~main.8b832b20.js.map",
+    "static/css/2.ad9eb4b5.chunk.css": "/static/css/2.ad9eb4b5.chunk.css",
+    "static/js/2.ddb42c2a.chunk.js": "/static/js/2.ddb42c2a.chunk.js",
+    "static/js/2.ddb42c2a.chunk.js.map": "/static/js/2.ddb42c2a.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.5d5bdf4fa04ee3007f646b97ea1a4993.js": "/precache-manifest.5d5bdf4fa04ee3007f646b97ea1a4993.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.ad9eb4b5.chunk.css.map": "/static/css/2.ad9eb4b5.chunk.css.map",
+    "static/css/main.f6566db2.chunk.css.map": "/static/css/main.f6566db2.chunk.css.map",
+    "static/media/calendar.svg": "/static/media/calendar.1890f5a0.svg",
+    "static/media/id-card.svg": "/static/media/id-card.42f4e5d8.svg",
+    "static/media/money.svg": "/static/media/money.d7285f3e.svg",
+    "static/media/report.svg": "/static/media/report.1c1c3f33.svg",
+    "static/media/superhero.svg": "/static/media/superhero.cd13e935.svg",
+    "static/media/superhero_alt.svg": "/static/media/superhero_alt.28bb2589.svg",
+    "static/media/tools.svg": "/static/media/tools.15679d32.svg"
+  }
+}

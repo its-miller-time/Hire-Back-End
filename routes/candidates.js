@@ -9,7 +9,7 @@ const getPredictions = require('./getPredictions')
 router.post('/create-user-profile',(req,res,next)=>{
 
   //GET USER DATA FROM THE ACTION CREATOR
-  const {username,nameFirst,nameLast,email,phone,password} = req.body
+  const {username,name,email,phone,password,title,years_of_experience} = req.body
 
   //CHECK TO SEE IF USER EXISTS
   const checkUserQuery = `
@@ -27,9 +27,9 @@ router.post('/create-user-profile',(req,res,next)=>{
     } else {
         const insertQuery = `
         INSERT INTO candidates
-            (nameLast,nameFirst,email,phone,password)
+            (name,email,phone,password,token,title,years_of_experience)
         VALUES
-            (?,?,?,?,?)
+            (?,?,?,?,?,?,?)
         `
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(password,salt);
@@ -37,7 +37,7 @@ router.post('/create-user-profile',(req,res,next)=>{
         // SETTING UP FOR FUTURE FUNCTIONALITY
         const token = randToken.uid(50);
         console.log('made it to insert query')
-        db.query(insertQuery,[nameLast,nameFirst,email,phone,hash,token],(err2) =>{
+        db.query(insertQuery,[name,email,phone,hash,token,title,years_of_experience],(err2) =>{
             if(err2){throw err2};
             res.json({
                 msg: "userAdded",
